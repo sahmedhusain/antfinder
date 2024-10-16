@@ -1,0 +1,4 @@
+package rooms
+
+func Rooms() {
+}

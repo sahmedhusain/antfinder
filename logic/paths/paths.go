@@ -1,0 +1,5 @@
+package paths
+
+
+func Paths() {
+}

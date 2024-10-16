@@ -1,0 +1,5 @@
+package datastruct
+
+func DataStruct() {
+
+}
