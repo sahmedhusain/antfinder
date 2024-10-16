@@ -1,5 +1,0 @@
-package datastruct
-
-func DataStruct() {
-
-}
