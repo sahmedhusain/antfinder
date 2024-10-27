@@ -1,230 +1,597 @@
 package main
 
 import (
-    "bufio"
-    "fmt"
-    "os"
-    "strings"
+	"bufio"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
 )
 
-type Graph struct {
-    Nodes map[string]*Node
-    Start *Node
-    End   *Node
+type State struct {
+	Visited         map[string]bool
+	Tunnels         map[string][]string
+	Rooms           []string
+	RoomsMapRoom    map[string]bool
+	RoomsMapTunnels map[string]string
+	StartEnd        map[string]int
+	StartEndRooms   map[string]string
+	Ants            int
+	AntsHere        bool
+	Solution        map[string]string
+	RoomCoordinates map[string]int
+	Paths           [][]string
+	End             string
+	StartAndEnd     []string
+	Connect         map[string]int
+	Many            map[string]int
 }
 
-type Node struct {
-    Name     string
-    Edges    []*Node
+var nums int
+var path [][]string
+var ant int
+var longestSolution [][]string
+var end string
+var longestSolutionWithWait [][]string
+var shortestWithoutWait [][]string
+var shortestWithWait [][]string
+var shortest [][]string
+var solution [][]string
+var apnum int
+
+func Antsop(ants int, paths [][]string, ends string) [][]string {
+	state := &State{
+		Many: make(map[string]int),
+	}
+	original := ants
+	if ants > 400 {
+		ant, apnum = modifyNumber(upperClosestDivisibleBy10(ants))
+	} else {
+		ant = ants
+		apnum = ants
+	}
+	end = ends // Initialize `end`
+	path = deepCopy(paths)
+	// Initialize longestSolution with the last path in `path`
+	if len(path) > ant {
+		if len(path) >= 200 {
+			path = path[:20]
+		}
+		if len(path) >= 60 {
+			path = path[:12]
+		}
+		if len(path) >= ant {
+			path = path[:ant]
+		}
+	}
+	for i := 1; i <= ant; i++ {
+		longestSolution = append(longestSolution, path[len(path)-1])
+	}
+	var soz [][]string
+	shortest = longestSolution
+	number := len(longestSolution) - 1
+	solution = modifyCommonRoom(deepCopy(longestSolution))
+	for i := len(path) - 2; i >= 0; i-- {
+		counter := len(longestSolution)
+		longestSolution = deepCopy(shortest)
+		shortestWithoutWait = deepCopy(shortest)
+		longestSolutionWithWait = modifyCommonRoom(deepCopy(longestSolution))
+		copy(shortestWithoutWait, reorderTallest((deepCopy(shortestWithoutWait)), state))
+		copy(shortestWithoutWait, appendNestedSlices(shortestWithoutWait, mapToNestedArray(state.Many)))
+		copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+		shortestWithWait = modifyCommonRoom(deepCopy(shortestWithoutWait))
+		if len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+			if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+				solution = deepCopy(shortestWithWait)
+			}
+			moh := len(longestSolution)
+			for len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+				longestSolutionWithWait = deepCopy(shortestWithWait)
+				copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+				copy(shortestWithWait, modifyCommonRoom(deepCopy(shortestWithoutWait)))
+				if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+					solution = deepCopy(shortestWithWait)
+					soz = deepCopy(shortestWithoutWait)
+				}
+				moh--
+				if moh == 0 {
+					break
+				}
+			}
+			shortest = deepCopy(shortestWithoutWait)
+		} else {
+			break
+		}
+		counter--
+		if counter == 0 {
+			break
+		}
+	}
+	if len(soz) == 0 {
+		soz = deepCopy(longestSolution)
+	}
+	shortest = (appendMultipleTimes(soz, apnum-1))[:original]
+	longestSolution = (appendMultipleTimes(soz, apnum-1))[:original]
+	solution = modifyCommonRoom(longestSolution)
+	for i := len(path) - 2; i >= 0; i-- {
+		counter := len(longestSolution)
+		longestSolution = deepCopy(shortest)
+		shortestWithoutWait = deepCopy(shortest)
+		longestSolutionWithWait = modifyCommonRoom(deepCopy(longestSolution))
+		copy(shortestWithoutWait, reorderTallest((deepCopy(shortestWithoutWait)), state))
+		copy(shortestWithoutWait, appendNestedSlices(shortestWithoutWait, mapToNestedArray(state.Many)))
+		copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+		shortestWithWait = modifyCommonRoom(deepCopy(shortestWithoutWait))
+		if len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+			if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+				solution = deepCopy(shortestWithWait)
+			}
+			moh := len(longestSolution)
+			for len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+				longestSolutionWithWait = deepCopy(shortestWithWait)
+				copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+				copy(shortestWithWait, modifyCommonRoom(deepCopy(shortestWithoutWait)))
+				if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+					solution = deepCopy(shortestWithWait)
+					soz = deepCopy(shortestWithoutWait)
+				}
+				moh--
+				if moh == 0 {
+					break
+				}
+			}
+			shortest = deepCopy(shortestWithoutWait)
+		} else {
+			break
+		}
+		counter--
+		if counter == 0 {
+			break
+		}
+	}
+	if len(soz) == 0 {
+		soz = deepCopy(longestSolution)
+	}
+	return modifyCommonRoom((appendMultipleTimes(soz, apnum-1))[:original])
 }
 
-type Ant struct {
-    ID   int
-    Path []*Node
+func modifyCommonRoom(sets [][]string) [][]string {
+	sets = sortByLength(sets)
+	for i := 0; i < len(sets)-1; i++ {
+		for j := 0; j < len(sets[i]); j++ {
+			for m := i + 1; m < len(sets); m++ {
+				if j >= len(sets[m]) {
+					continue
+				}
+				if sets[i][j] != "wait" && sets[i][j] == sets[m][j] {
+					if sets[m][j] == end && !identicalSlices(sets[m], sets[i]) {
+						continue
+					}
+					before := sets[m][:j]
+					after := sets[m][j:]
+					sets[m] = append(before, append([]string{"wait"}, after...)...)
+				}
+			}
+		}
+	}
+	return sortByLength(sets)
 }
 
-func ReadFile(filePath string) ([]string, error) {
-    file, err := os.Open(filePath)
-    if (err != nil) {
-        return nil, err
-    }
-    defer file.Close()
-
-    var lines []string
-    scanner := bufio.NewScanner(file)
-    for scanner.Scan() {
-        lines = append(lines, scanner.Text())
-    }
-
-    if err := scanner.Err(); err != nil {
-        return nil, err
-    }
-
-    return lines, nil
+func sortByLength(sets [][]string) [][]string {
+	sort.Slice(sets, func(i, j int) bool {
+		return len(sets[i]) < len(sets[j])
+	})
+	return sets
 }
 
-func ParseLines(lines []string) ([]string, []string, int, string, string, error) {
-    var connections []string
-    var nodeDefinitions []string
-    var ants int
-    var startRoomName, endRoomName string
-
-    for i := 0; i < len(lines); i++ {
-        line := lines[i]
-
-        if line == "" {
-            continue
-        }
-
-        if line == "##start" {
-            if i+1 < len(lines) {
-                startRoomName = lines[i+1]
-                fmt.Println("Found start room:", startRoomName) // Debug print
-                i++ // Skip the next line as it is the start room name
-            }
-            continue
-        }
-
-        if line == "##end" {
-            if i+1 < len(lines) {
-                endRoomName = lines[i+1]
-                fmt.Println("Found end room:", endRoomName) // Debug print
-                i++ // Skip the next line as it is the end room name
-            }
-            continue
-        }
-
-        if ants == 0 {
-            fmt.Sscanf(line, "%d", &ants)
-            fmt.Println("Found ants:", ants) // Debug print
-        } else if strings.Contains(line, "-") {
-            connections = append(connections, line)
-        } else {
-            nodeDefinitions = append(nodeDefinitions, line)
-        }
-    }
-
-    fmt.Println("Final start room:", startRoomName) // Debug print
-    fmt.Println("Final end room:", endRoomName) // Debug print
-
-    if startRoomName == "" || endRoomName == "" {
-        return nil, nil, 0, "", "", fmt.Errorf("invalid data format, no start or end room found")
-    }
-
-    return nodeDefinitions, connections, ants, startRoomName, endRoomName, nil
+func recur(a [][]string, b []string, number int) [][]string {
+	if testEq(a, b, number) {
+		for i := number - 1; i >= 0; i-- {
+			if !testEq(a, b, i) {
+				a[i] = b
+				return a
+			}
+		}
+	} else {
+		a[number] = b
+		return a
+	}
+	return a
 }
 
-func BuildGraph(nodeDefinitions, connections []string, startRoomName, endRoomName string) (*Graph, error) {
-    graph := &Graph{
-        Nodes: make(map[string]*Node),
-    }
-
-    // Create nodes from node definitions
-    for _, nodeDef := range nodeDefinitions {
-        parts := strings.Fields(nodeDef)
-        if len(parts) != 3 {
-            return nil, fmt.Errorf("invalid node definition format: %s", nodeDef)
-        }
-        nodeName := parts[0]
-        graph.Nodes[nodeName] = &Node{Name: nodeName}
-    }
-
-    // Create edges from connections
-    for _, connection := range connections {
-        parts := strings.Split(connection, "-")
-        if len(parts) != 2 {
-            return nil, fmt.Errorf("invalid connection format: %s", connection)
-        }
-        node1Name, node2Name := parts[0], parts[1]
-
-        node1, exists := graph.Nodes[node1Name]
-        if !exists {
-            return nil, fmt.Errorf("node not found: %s", node1Name)
-        }
-
-        node2, exists := graph.Nodes[node2Name]
-        if !exists {
-            return nil, fmt.Errorf("node not found: %s", node2Name)
-        }
-
-        node1.Edges = append(node1.Edges, node2)
-        node2.Edges = append(node2.Edges, node1)
-    }
-
-    // Set the start and end nodes
-    startNode, exists := graph.Nodes[startRoomName]
-    if !exists {
-        return nil, fmt.Errorf("start room not found: %s", startRoomName)
-    }
-    graph.Start = startNode
-
-    endNode, exists := graph.Nodes[endRoomName]
-    if !exists {
-        return nil, fmt.Errorf("end room not found: %s", endRoomName)
-    }
-    graph.End = endNode
-
-    return graph, nil
+func testEq(a [][]string, b []string, number int) bool {
+	if len(a[number]) != len(b) {
+		return false
+	}
+	for i := range a[number] {
+		if a[number][i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
-func BFS(graph *Graph) []*Node {
-    queue := []*Node{graph.Start}
-    visited := make(map[string]bool)
-    prev := make(map[string]*Node)
-
-    visited[graph.Start.Name] = true
-
-    for len(queue) > 0 {
-        current := queue[0]
-        queue = queue[1:]
-
-        if current == graph.End {
-            break
-        }
-
-        for _, neighbor := range current.Edges {
-            if !visited[neighbor.Name] {
-                queue = append(queue, neighbor)
-                visited[neighbor.Name] = true
-                prev[neighbor.Name] = current
-            }
-        }
-    }
-
-    var path []*Node
-    for at := graph.End; at != nil; at = prev[at.Name] {
-        path = append([]*Node{at}, path...)
-    }
-
-    return path
+func deepCopy(sets [][]string) [][]string {
+	copied := make([][]string, len(sets))
+	for i := range sets {
+		copied[i] = append([]string(nil), sets[i]...)
+	}
+	return copied
 }
 
-func simulateAnts(graph *Graph, path []*Node, ants int) {
-    antPositions := make([]int, ants)
-    for i := range antPositions {
-        antPositions[i] = 0
-    }
-
-    for {
-        moved := false
-        for i := 0; i < ants; i++ {
-            if antPositions[i] < len(path)-1 {
-                antPositions[i]++
-                fmt.Printf("L%d-%s ", i+1, path[antPositions[i]].Name)
-                moved = true
-            }
-        }
-        if !moved {
-            break
-        }
-        fmt.Println()
-    }
+func reorderTallest(sets [][]string, state *State) [][]string {
+	if len(sets) == 0 {
+		return sets
+	}
+	pattern := sets
+	number := len(pattern) - 1
+	length := len(pattern[number])
+	for i := number; i >= 0; i-- {
+		if len(pattern[i]) == length {
+			state.Many[strings.Join(pattern[i], "&*")]++
+		} else {
+			return pattern[:number+1]
+		}
+	}
+	return [][]string{}
 }
 
+func mapToNestedArray(m map[string]int) [][]string {
+	var result [][]string
+	tempMap := make(map[string]int)
+	for k, v := range m {
+		tempMap[k] = v
+	}
+	for len(tempMap) > 0 {
+		for k, v := range tempMap {
+			if v > 0 {
+				result = append(result, strings.Split(k, "&*"))
+				tempMap[k] = v - 1
+				if tempMap[k] == 0 {
+					delete(tempMap, k)
+				}
+			}
+		}
+	}
+	return result
+}
+
+func appendNestedSlices(destination, source [][]string) [][]string {
+	for _, slice := range source {
+		destination = append(destination, slice)
+	}
+	return destination
+}
+
+func identicalSlices(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func modifyNumber(n int) (j int, i int) {
+	if n < 400 {
+		return n, 1
+	}
+	if n >= 400 && n < 2000 {
+		for i := 10; i >= 2; i-- {
+			if n%i == 0 {
+				return n / i, i
+			}
+		}
+	}
+	if n >= 2000 && n <= 5000 {
+		for i := 50; i >= 2; i-- {
+			if n%i == 0 {
+				return n / i, i
+			}
+		}
+	}
+	if n >= 5001 && n <= 20000 {
+		for i := 100; i >= 2; i-- {
+			if n%i == 0 {
+				return n / i, i
+			}
+		}
+	}
+	return n, 1
+}
+
+func appendMultipleTimes(sets [][]string, n int) [][]string {
+	result := deepCopy(sets)
+	for j := 0; j < n; j++ {
+		for i := range sets {
+			result = append(result, sets[i])
+		}
+	}
+	return result
+}
+
+func upperClosestDivisibleBy10(n int) int {
+	if n%10 == 0 {
+		return n
+	}
+	return ((n / 10) + 1) * 10
+}
 func main() {
-    if len(os.Args) < 2 {
-        fmt.Println("ERROR: No input file provided")
-        return
-    }
+	state := &State{
+		Visited:         make(map[string]bool),
+		Tunnels:         make(map[string][]string),
+		RoomsMapRoom:    make(map[string]bool),
+		RoomsMapTunnels: make(map[string]string),
+		StartEnd:        make(map[string]int),
+		StartEndRooms:   make(map[string]string),
+		RoomCoordinates: make(map[string]int),
+		Solution:        make(map[string]string),
+		Connect:         make(map[string]int),
+	}
 
-    filePath := os.Args[1]
-    lines, err := ReadFile(filePath)
-    if err != nil {
-        fmt.Println("Error reading file:", err)
-        return
-    }
+	if len(os.Args) == 2 {
+		f, err := os.Open(os.Args[1])
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			return
+		}
+		defer f.Close()
 
-    nodeDefinitions, connections, ants, startRoomName, endRoomName, err := ParseLines(lines)
-    if err != nil {
-        fmt.Println("Error parsing lines:", err)
-        return
-    }
-    graph, err := BuildGraph(nodeDefinitions, connections, startRoomName, endRoomName)
-    if err != nil {
-        fmt.Println("Error building graph:", err)
-        return
-    }
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fmt.Println(line)
+			variableop(line, state)
+		}
 
-    path := BFS(graph)
-    simulateAnts(graph, path, ants)
+		if !roomtunels(state.RoomsMapTunnels, state.Rooms) {
+			fmt.Println("Error: tunnels do not connect to a valid room")
+			os.Exit(1)
+		}
+		if state.RoomsMapTunnels[state.End] == "" {
+			fmt.Println("Error: start and end rooms do not connect")
+			os.Exit(1)
+		}
+		if state.StartEndRooms["start"] != "" && state.StartEndRooms["end"] != "" && len(state.StartAndEnd) == 2 {
+			startedroom := state.StartEndRooms["start"]
+			endedroom := state.StartEndRooms["end"]
+			for _, route := range state.Tunnels[startedroom] {
+				path := []string{}
+				state.Visited[startedroom] = true
+				startPathOpt(path, endedroom, route, state)
+			}
+			ralph := [][]string{}
+			for i := 1; i <= state.Ants; i++ {
+				ralph = append(ralph, state.Paths[len(state.Paths)-1])
+			}
+			state.Paths = sortByLength(getUniqueStringSets(state.Paths))
+			solution := equalizeSlices(Antsop(state.Ants, state.Paths, state.End))
+			if state.Ants == 0 {
+				fmt.Println("error, no Ants found")
+			} else if state.Ants > 10000 {
+				fmt.Println("error, Ants number is too large")
+			} else {
+				if state.Paths == nil {
+					fmt.Println("error, no paths connect the start to the end")
+				} else {
+					fmt.Println(len(solution[state.Ants-1]))
+					for i := 0; i < len(solution[0]); i++ {
+						for j := 0; j < state.Ants; j++ {
+							if i >= len(solution[j]) || solution[j][i] == "wait" {
+								continue
+							}
+							fmt.Print("L")
+							fmt.Print(j + 1)
+							fmt.Print("-")
+							fmt.Print(solution[j][i])
+							fmt.Print(" ")
+						}
+						fmt.Println()
+					}
+				}
+			}
+		} else {
+			fmt.Println("Error: start and end rooms are not defined or are duplicated")
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("Usage: go run main.go <filename>")
+		os.Exit(1)
+	}
+}
+
+func variableop(s string, state *State) {
+	if s == "" {
+	} else if isNumber(s) && !state.AntsHere {
+		state.Ants, _ = strconv.Atoi(s)
+		if state.Ants < 0 {
+			fmt.Println("Error: Ants number is negative")
+			os.Exit(1)
+		}
+		state.AntsHere = true
+	} else if s == "##end" {
+		state.StartEnd["end"]++
+		state.StartAndEnd = append(state.StartAndEnd, "##end")
+	} else if s == "##start" {
+		state.StartEnd["start"]++
+		state.StartAndEnd = append(state.StartAndEnd, "##end")
+	} else if s[0] == '#' {
+	} else if len(strings.Fields(s)) == 3 {
+		tru := true
+		for _, t := range strings.Fields(s)[1:] {
+			if !isNumber(t) {
+				tru = false
+				fmt.Println("invalid data format 1")
+				os.Exit(1)
+				break
+			}
+		}
+		if tru {
+			state.Rooms = append(state.Rooms, strings.Fields(s)[0])
+			state.RoomsMapRoom[strings.Fields(s)[0]] = true
+			state.RoomCoordinates[strings.Join(strings.Fields(s)[1:], ",")]++
+			if state.RoomCoordinates[strings.Join(strings.Fields(s)[1:], ",")] > 1 {
+				fmt.Println("Error: room coordinates are not unique")
+				os.Exit(1)
+			}
+			if state.StartEnd["start"] == 1 && state.StartEnd["end"] == 0 {
+				state.StartEndRooms["start"] = strings.Fields(s)[0]
+				state.StartEnd["start"]--
+			} else if state.StartEnd["end"] == 1 && state.StartEnd["start"] == 0 {
+				state.StartEndRooms["end"] = strings.Fields(s)[0]
+				state.End = strings.Fields(s)[0]
+				state.StartEnd["end"]--
+			}
+		} else {
+			fmt.Println("invalid data format 2")
+			os.Exit(1)
+		}
+	} else if strings.ContainsRune(s, '-') {
+		state.Connect[s]++
+		state.Connect[reverseHyphenatedString(s)]++
+		if state.Connect[s] > 1 || state.Connect[reverseHyphenatedString(s)] > 1 {
+			fmt.Println("Error: tunnels are not unique")
+			os.Exit(1)
+		}
+		tempar := strings.Split(s, "-")
+		if len(tempar) == 2 {
+			state.RoomsMapTunnels[tempar[0]] = tempar[0]
+			state.RoomsMapTunnels[tempar[1]] = tempar[1]
+			state.Tunnels[tempar[0]] = append(state.Tunnels[tempar[0]], tempar[1])
+			state.Tunnels[tempar[1]] = append(state.Tunnels[tempar[1]], tempar[0])
+		} else {
+			fmt.Println("invalid data format")
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("invalid data format")
+		os.Exit(1)
+	}
+}
+
+func roomtunels(tunel map[string]string, room []string) bool {
+	for _, t := range tunel {
+		if contains(room, t) {
+			continue
+		} else if !contains(room, t) {
+			return false
+		} else {
+			return true
+		}
+	}
+	return true
+}
+
+func isNumber(str string) bool {
+	_, err := strconv.ParseFloat(str, 64)
+	return err == nil
+}
+
+func contains(slice []string, item string) bool {
+	for _, i := range slice {
+		if i == item {
+			return true
+		}
+	}
+	return false
+}
+
+func startPathOpt(path []string, end string, route string, state *State) {
+	if route == end {
+		path = append(path, route)
+		state.Paths = append(state.Paths, append([]string{}, path...))
+	} else {
+		path = append(path, route)
+		for _, nextRoute := range state.Tunnels[route] {
+			if !state.Visited[nextRoute] {
+				state.Visited[nextRoute] = true
+				if nextRoute == end {
+					path = append(path, nextRoute)
+					state.Paths = append(state.Paths, append([]string{}, path...))
+				} else {
+					startPathOpt(path, end, nextRoute, state)
+				}
+				state.Visited[nextRoute] = false
+			} else {
+				continue
+			}
+		}
+	}
+}
+
+func getUniqueStringSets(sets [][]string) [][]string {
+	result := make([][]string, 0, len(sets))
+	for _, set := range sets {
+		if isUniqueStringSet(set) {
+			result = append(result, set)
+		}
+	}
+	return result
+}
+
+func isUniqueStringSet(set []string) bool {
+	seen := make(map[string]bool, len(set))
+	for _, s := range set {
+		if seen[s] {
+			return false
+		}
+		seen[s] = true
+	}
+	return true
+}
+
+func modifyCommonroom(sets [][]string, setspostion int, position int, state *State) [][]string {
+	j := position
+	for i := setspostion; i < len(sets)-1; i++ {
+		if sets[setspostion][j] != "wait" && sets[setspostion][j] == sets[i+1][j] {
+			if sets[i+1][j] == state.End {
+				continue
+			}
+			before := sets[i+1][:j]
+			after := sets[i+1][j:]
+			sets[i+1] = append(before, append([]string{"wait"}, after...)...)
+		}
+	}
+	return sets
+}
+
+func equalizeSlices(data [][]string) [][]string {
+	maxLen := 0
+	for _, row := range data {
+		if len(row) > maxLen {
+			maxLen = len(row)
+		}
+	}
+	result := make([][]string, len(data))
+	for i, row := range data {
+		if len(row) < maxLen {
+			result[i] = make([]string, maxLen)
+			copy(result[i], row)
+			for j := len(row); j < maxLen; j++ {
+				result[i][j] = "wait"
+			}
+		} else {
+			result[i] = row
+		}
+	}
+	return result
+}
+
+func reverseHyphenatedString(str string) string {
+	parts := strings.Split(str, "-")
+	before := reverseString(parts[0])
+	after := reverseString(parts[1])
+	return fmt.Sprintf("%s-%s", after, before)
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
 }
