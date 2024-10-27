@@ -1,4 +1,0 @@
-package rooms
-
-func Rooms() {
-}
