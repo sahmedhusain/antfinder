@@ -28,7 +28,6 @@ type State struct {
 	Many            map[string]int
 }
 
-var nums int
 var path [][]string
 var ant int
 var longestSolution [][]string
@@ -39,21 +38,22 @@ var shortestWithWait [][]string
 var shortest [][]string
 var solution [][]string
 var apnum int
+var state *State
+var original int
 
 func Antsop(ants int, paths [][]string, ends string) [][]string {
-	state := &State{
+	state = &State{
 		Many: make(map[string]int),
 	}
-	original := ants
+	original = ants
 	if ants > 400 {
 		ant, apnum = modifyNumber(upperClosestDivisibleBy10(ants))
 	} else {
 		ant = ants
 		apnum = ants
 	}
-	end = ends // Initialize `end`
+	end = ends
 	path = deepCopy(paths)
-	// Initialize longestSolution with the last path in `path`
 	if len(path) > ant {
 		if len(path) >= 200 {
 			path = path[:20]
@@ -258,9 +258,7 @@ func mapToNestedArray(m map[string]int) [][]string {
 }
 
 func appendNestedSlices(destination, source [][]string) [][]string {
-	for _, slice := range source {
-		destination = append(destination, slice)
-	}
+	destination = append(destination, source...)
 	return destination
 }
 
@@ -307,9 +305,7 @@ func modifyNumber(n int) (j int, i int) {
 func appendMultipleTimes(sets [][]string, n int) [][]string {
 	result := deepCopy(sets)
 	for j := 0; j < n; j++ {
-		for i := range sets {
-			result = append(result, sets[i])
-		}
+		result = append(result, sets...)
 	}
 	return result
 }
@@ -364,10 +360,7 @@ func main() {
 				state.Visited[startedroom] = true
 				startPathOpt(path, endedroom, route, state)
 			}
-			ralph := [][]string{}
-			for i := 1; i <= state.Ants; i++ {
-				ralph = append(ralph, state.Paths[len(state.Paths)-1])
-			}
+
 			state.Paths = sortByLength(getUniqueStringSets(state.Paths))
 			solution := equalizeSlices(Antsop(state.Ants, state.Paths, state.End))
 			if state.Ants == 0 {
@@ -542,21 +535,6 @@ func isUniqueStringSet(set []string) bool {
 		seen[s] = true
 	}
 	return true
-}
-
-func modifyCommonroom(sets [][]string, setspostion int, position int, state *State) [][]string {
-	j := position
-	for i := setspostion; i < len(sets)-1; i++ {
-		if sets[setspostion][j] != "wait" && sets[setspostion][j] == sets[i+1][j] {
-			if sets[i+1][j] == state.End {
-				continue
-			}
-			before := sets[i+1][:j]
-			after := sets[i+1][j:]
-			sets[i+1] = append(before, append([]string{"wait"}, after...)...)
-		}
-	}
-	return sets
 }
 
 func equalizeSlices(data [][]string) [][]string {
