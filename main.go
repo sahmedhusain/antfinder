@@ -340,7 +340,6 @@ func main() {
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
 			line := scanner.Text()
-			fmt.Println(line)
 			variableop(line, state)
 		}
 
@@ -371,7 +370,6 @@ func main() {
 				if state.Paths == nil {
 					fmt.Println("error, no paths connect the start to the end")
 				} else {
-					fmt.Println(len(solution[state.Ants-1]))
 					for i := 0; i < len(solution[0]); i++ {
 						for j := 0; j < state.Ants; j++ {
 							if i >= len(solution[j]) || solution[j][i] == "wait" {
