@@ -40,47 +40,176 @@ var solution [][]string
 var apnum int
 var state *State
 var original int
+var soz [][]string
+var counter int
 
-func Antsop(ants int, paths [][]string, ends string) [][]string {
-	state = &State{
+// func Antsop(ants int, paths [][]string, ends string) [][]string {
+// 	state = &State{
+// 		Many: make(map[string]int),
+// 	}
+// 	original = ants
+// 	if ants > 400 {
+// 		ant, apnum = modifyNumber(upperClosestDivisibleBy10(ants))
+// 	} else {
+// 		ant = ants
+// 		apnum = ants
+// 	}
+// 	end = ends
+// 	path = deepCopy(paths)
+// 	if len(path) > ant {
+// 		if len(path) >= 200 {
+// 			path = path[:20]
+// 		}
+// 		if len(path) >= 60 {
+// 			path = path[:12]
+// 		}
+// 		if len(path) >= ant {
+// 			path = path[:ant]
+// 		}
+// 	}
+// 	for i := 1; i <= ant; i++ {
+// 		longestSolution = append(longestSolution, path[len(path)-1])
+// 	}
+// 	var soz [][]string
+// 	shortest = longestSolution
+// 	number := len(longestSolution) - 1
+// 	solution = modifyCommonRoom(deepCopy(longestSolution))
+// 	for i := len(path) - 2; i >= 0; i-- {
+// 		counter := len(longestSolution)
+// 		longestSolution = deepCopy(shortest)
+// 		shortestWithoutWait = deepCopy(shortest)
+// 		longestSolutionWithWait = modifyCommonRoom(deepCopy(longestSolution))
+// 		copy(shortestWithoutWait, reorderTallest((deepCopy(shortestWithoutWait)), state))
+// 		copy(shortestWithoutWait, appendNestedSlices(shortestWithoutWait, mapToNestedArray(state.Many)))
+// 		copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+// 		shortestWithWait = modifyCommonRoom(deepCopy(shortestWithoutWait))
+// 		if len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+// 			if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+// 				solution = deepCopy(shortestWithWait)
+// 			}
+// 			moh := len(longestSolution)
+// 			for len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+// 				longestSolutionWithWait = deepCopy(shortestWithWait)
+// 				copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+// 				copy(shortestWithWait, modifyCommonRoom(deepCopy(shortestWithoutWait)))
+// 				if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+// 					solution = deepCopy(shortestWithWait)
+// 					soz = deepCopy(shortestWithoutWait)
+// 				}
+// 				moh--
+// 				if moh == 0 {
+// 					break
+// 				}
+// 			}
+// 			shortest = deepCopy(shortestWithoutWait)
+// 		} else {
+// 			break
+// 		}
+// 		counter--
+// 		if counter == 0 {
+// 			break
+// 		}
+// 	}
+// 	if len(soz) == 0 {
+// 		soz = deepCopy(longestSolution)
+// 	}
+// 	shortest = (appendMultipleTimes(soz, apnum-1))[:original]
+// 	longestSolution = (appendMultipleTimes(soz, apnum-1))[:original]
+// 	solution = modifyCommonRoom(longestSolution)
+// 	for i := len(path) - 2; i >= 0; i-- {
+// 		counter := len(longestSolution)
+// 		longestSolution = deepCopy(shortest)
+// 		shortestWithoutWait = deepCopy(shortest)
+// 		longestSolutionWithWait = modifyCommonRoom(deepCopy(longestSolution))
+// 		copy(shortestWithoutWait, reorderTallest((deepCopy(shortestWithoutWait)), state))
+// 		copy(shortestWithoutWait, appendNestedSlices(shortestWithoutWait, mapToNestedArray(state.Many)))
+// 		copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+// 		shortestWithWait = modifyCommonRoom(deepCopy(shortestWithoutWait))
+// 		if len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+// 			if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+// 				solution = deepCopy(shortestWithWait)
+// 			}
+// 			moh := len(longestSolution)
+// 			for len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
+// 				longestSolutionWithWait = deepCopy(shortestWithWait)
+// 				copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+// 				copy(shortestWithWait, modifyCommonRoom(deepCopy(shortestWithoutWait)))
+// 				if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
+// 					solution = deepCopy(shortestWithWait)
+// 					soz = deepCopy(shortestWithoutWait)
+// 				}
+// 				moh--
+// 				if moh == 0 {
+// 					break
+// 				}
+// 			}
+// 			shortest = deepCopy(shortestWithoutWait)
+// 		} else {
+// 			break
+// 		}
+// 		counter--
+// 		if counter == 0 {
+// 			break
+// 		}
+// 	}
+// 	if len(soz) == 0 {
+// 		soz = deepCopy(longestSolution)
+// 	}
+// 	return modifyCommonRoom((appendMultipleTimes(soz, apnum-1))[:original])
+//}
+
+func initializeState() *State {
+	return &State{
 		Many: make(map[string]int),
 	}
-	original = ants
+}
+
+func adjustAnts(ants int) (int, int) {
 	if ants > 400 {
-		ant, apnum = modifyNumber(upperClosestDivisibleBy10(ants))
-	} else {
-		ant = ants
-		apnum = ants
+		return modifyNumber(upperClosestDivisibleBy10(ants))
 	}
-	end = ends
-	path = deepCopy(paths)
-	if len(path) > ant {
-		if len(path) >= 200 {
-			path = path[:20]
+	return ants, ants
+}
+
+func adjustPaths(paths [][]string, ant int) [][]string {
+	if len(paths) > ant {
+		if len(paths) >= 200 {
+			paths = paths[:20]
 		}
-		if len(path) >= 60 {
-			path = path[:12]
+		if len(paths) >= 60 {
+			paths = paths[:12]
 		}
-		if len(path) >= ant {
-			path = path[:ant]
+		if len(paths) >= ant {
+			paths = paths[:ant]
 		}
 	}
+	return paths
+}
+
+func initializeLongestSolution(paths [][]string, ant int) [][]string {
+	var longestSolution [][]string
 	for i := 1; i <= ant; i++ {
-		longestSolution = append(longestSolution, path[len(path)-1])
+		longestSolution = append(longestSolution, paths[len(paths)-1])
 	}
-	var soz [][]string
-	shortest = longestSolution
-	number := len(longestSolution) - 1
-	solution = modifyCommonRoom(deepCopy(longestSolution))
-	for i := len(path) - 2; i >= 0; i-- {
-		counter := len(longestSolution)
-		longestSolution = deepCopy(shortest)
-		shortestWithoutWait = deepCopy(shortest)
-		longestSolutionWithWait = modifyCommonRoom(deepCopy(longestSolution))
-		copy(shortestWithoutWait, reorderTallest((deepCopy(shortestWithoutWait)), state))
+	return longestSolution
+}
+
+func calculateSolutions(paths [][]string, ant int, state *State, end string) [][]string {
+	//var soz [][]string
+	shortest := initializeLongestSolution(paths, ant)
+	number := len(shortest) - 1
+	solution := modifyCommonRoom(deepCopy(shortest))
+
+	for i := len(paths) - 2; i >= 0; i-- {
+		counter = len(shortest)
+		longestSolution := deepCopy(shortest)
+		shortestWithoutWait := deepCopy(shortest)
+		longestSolutionWithWait := modifyCommonRoom(deepCopy(longestSolution))
+		copy(shortestWithoutWait, reorderTallest(deepCopy(shortestWithoutWait), state))
 		copy(shortestWithoutWait, appendNestedSlices(shortestWithoutWait, mapToNestedArray(state.Many)))
-		copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
-		shortestWithWait = modifyCommonRoom(deepCopy(shortestWithoutWait))
+		copy(shortestWithoutWait, recur(shortestWithoutWait, paths[i], number))
+		shortestWithWait := modifyCommonRoom(deepCopy(shortestWithoutWait))
+
 		if len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
 			if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
 				solution = deepCopy(shortestWithWait)
@@ -88,7 +217,7 @@ func Antsop(ants int, paths [][]string, ends string) [][]string {
 			moh := len(longestSolution)
 			for len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
 				longestSolutionWithWait = deepCopy(shortestWithWait)
-				copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
+				copy(shortestWithoutWait, recur(shortestWithoutWait, paths[i], number))
 				copy(shortestWithWait, modifyCommonRoom(deepCopy(shortestWithoutWait)))
 				if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
 					solution = deepCopy(shortestWithWait)
@@ -103,57 +232,19 @@ func Antsop(ants int, paths [][]string, ends string) [][]string {
 		} else {
 			break
 		}
-		counter--
-		if counter == 0 {
-			break
-		}
 	}
-	if len(soz) == 0 {
-		soz = deepCopy(longestSolution)
-	}
-	shortest = (appendMultipleTimes(soz, apnum-1))[:original]
-	longestSolution = (appendMultipleTimes(soz, apnum-1))[:original]
-	solution = modifyCommonRoom(longestSolution)
-	for i := len(path) - 2; i >= 0; i-- {
-		counter := len(longestSolution)
-		longestSolution = deepCopy(shortest)
-		shortestWithoutWait = deepCopy(shortest)
-		longestSolutionWithWait = modifyCommonRoom(deepCopy(longestSolution))
-		copy(shortestWithoutWait, reorderTallest((deepCopy(shortestWithoutWait)), state))
-		copy(shortestWithoutWait, appendNestedSlices(shortestWithoutWait, mapToNestedArray(state.Many)))
-		copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
-		shortestWithWait = modifyCommonRoom(deepCopy(shortestWithoutWait))
-		if len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
-			if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
-				solution = deepCopy(shortestWithWait)
-			}
-			moh := len(longestSolution)
-			for len(shortestWithWait[len(shortestWithWait)-1]) <= len(longestSolutionWithWait[len(shortestWithWait)-1]) {
-				longestSolutionWithWait = deepCopy(shortestWithWait)
-				copy(shortestWithoutWait, recur(shortestWithoutWait, path[i], number))
-				copy(shortestWithWait, modifyCommonRoom(deepCopy(shortestWithoutWait)))
-				if len(shortestWithWait[len(shortestWithWait)-1]) < len(solution[len(shortestWithWait)-1]) {
-					solution = deepCopy(shortestWithWait)
-					soz = deepCopy(shortestWithoutWait)
-				}
-				moh--
-				if moh == 0 {
-					break
-				}
-			}
-			shortest = deepCopy(shortestWithoutWait)
-		} else {
-			break
-		}
-		counter--
-		if counter == 0 {
-			break
-		}
-	}
-	if len(soz) == 0 {
-		soz = deepCopy(longestSolution)
-	}
-	return modifyCommonRoom((appendMultipleTimes(soz, apnum-1))[:original])
+	return solution
+}
+
+func Antsop(ants int, paths [][]string, ends string) [][]string {
+	state := initializeState()
+	original = ants
+	ant, apnum = adjustAnts(ants)
+	end := ends
+	path := deepCopy(paths)
+	path = adjustPaths(path, ant)
+	longestSolution = initializeLongestSolution(path, ant)
+	return calculateSolutions(path, ant, state, end)
 }
 
 func modifyCommonRoom(sets [][]string) [][]string {
@@ -316,8 +407,20 @@ func upperClosestDivisibleBy10(n int) int {
 	}
 	return ((n / 10) + 1) * 10
 }
-func main() {
-	state := &State{
+
+func handleFileInput(args []string) (*os.File, error) {
+	if len(args) == 2 {
+		f, err := os.Open(args[1])
+		if err != nil {
+			return nil, fmt.Errorf("error opening file: %w", err)
+		}
+		return f, nil
+	}
+	return nil, fmt.Errorf("invalid number of arguments")
+}
+
+func initial() *State {
+	return &State{
 		Visited:         make(map[string]bool),
 		Tunnels:         make(map[string][]string),
 		RoomsMapRoom:    make(map[string]bool),
@@ -328,72 +431,81 @@ func main() {
 		Solution:        make(map[string]string),
 		Connect:         make(map[string]int),
 	}
+}
 
-	if len(os.Args) == 2 {
-		f, err := os.Open(os.Args[1])
-		if err != nil {
-			fmt.Println("Error opening file:", err)
-			return
-		}
-		defer f.Close()
+func scanFile(file *os.File, state *State) error {
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		fmt.Println(line)
+		variableop(line, state)
+	}
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("error scanning file: %w", err)
+	}
+	return nil
+}
 
-		scanner := bufio.NewScanner(f)
-		for scanner.Scan() {
-			line := scanner.Text()
-			fmt.Println(line)
-			variableop(line, state)
-		}
+func calculatePaths(state *State) error {
+	startedroom := state.StartEndRooms["start"]
+	endedroom := state.StartEndRooms["end"]
+	for _, route := range state.Tunnels[startedroom] {
+		path := []string{}
+		state.Visited[startedroom] = true
+		startPathOpt(path, endedroom, route, state)
+	}
 
-		if !roomtunels(state.RoomsMapTunnels, state.Rooms) {
-			fmt.Println("Error: tunnels do not connect to a valid room")
-			os.Exit(1)
-		}
-		if state.RoomsMapTunnels[state.End] == "" {
-			fmt.Println("Error: start and end rooms do not connect")
-			os.Exit(1)
-		}
-		if state.StartEndRooms["start"] != "" && state.StartEndRooms["end"] != "" && len(state.StartAndEnd) == 2 {
-			startedroom := state.StartEndRooms["start"]
-			endedroom := state.StartEndRooms["end"]
-			for _, route := range state.Tunnels[startedroom] {
-				path := []string{}
-				state.Visited[startedroom] = true
-				startPathOpt(path, endedroom, route, state)
-			}
+	state.Paths = sortByLength(getUniqueStringSets(state.Paths))
+	solution = equalizeSlices(Antsop(state.Ants, state.Paths, state.End))
+	if state.Ants == 0 {
+		return fmt.Errorf("error, no Ants found")
+	} else if state.Ants > 10000 {
+		return fmt.Errorf("error, Ants number is too large")
+	}
+	// Further processing of the solution can be added here
+	return nil
+}
 
-			state.Paths = sortByLength(getUniqueStringSets(state.Paths))
-			solution := equalizeSlices(Antsop(state.Ants, state.Paths, state.End))
-			if state.Ants == 0 {
-				fmt.Println("error, no Ants found")
-			} else if state.Ants > 10000 {
-				fmt.Println("error, Ants number is too large")
-			} else {
-				if state.Paths == nil {
-					fmt.Println("error, no paths connect the start to the end")
-				} else {
-					fmt.Println(len(solution[state.Ants-1]))
-					for i := 0; i < len(solution[0]); i++ {
-						for j := 0; j < state.Ants; j++ {
-							if i >= len(solution[j]) || solution[j][i] == "wait" {
-								continue
-							}
-							fmt.Print("L")
-							fmt.Print(j + 1)
-							fmt.Print("-")
-							fmt.Print(solution[j][i])
-							fmt.Print(" ")
-						}
-						fmt.Println()
-					}
-				}
-			}
-		} else {
-			fmt.Println("Error: start and end rooms are not defined or are duplicated")
-			os.Exit(1)
-		}
-	} else {
-		fmt.Println("Usage: go run main.go <filename>")
-		os.Exit(1)
+func validateTunnels(state *State) error {
+	if !roomtunels(state.RoomsMapTunnels, state.Rooms) {
+		return fmt.Errorf("tunnels do not connect to a valid room")
+	}
+	if state.RoomsMapTunnels[state.End] == "" {
+		return fmt.Errorf("start and end rooms do not connect")
+	}
+	if state.StartEndRooms["start"] == "" || state.StartEndRooms["end"] == "" || len(state.StartAndEnd) != 2 {
+		return fmt.Errorf("invalid start or end rooms")
+	}
+	return nil
+}
+
+func main() {
+
+	state := initializeState()
+
+	file, err := handleFileInput(os.Args)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+
+	// Scan the file and process each line
+	if err := scanFile(file, state); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Validate the tunnels and connections
+	if err := validateTunnels(state); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Calculate the paths and solutions
+	if err := calculatePaths(state); err != nil {
+		fmt.Println(err)
+		return
 	}
 }
 
