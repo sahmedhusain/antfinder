@@ -328,8 +328,14 @@ func main() {
 		Solution:        make(map[string]string),
 		Connect:         make(map[string]int),
 	}
-
-	if len(os.Args) == 2 {
+	if len(os.Args) > 2 {
+		fmt.Println("Error: too many arguments")
+		fmt.Println("Usage: go run main.go <filename>")
+		os.Exit(1)
+	} else if len(os.Args) == 1 {
+		fmt.Println("Usage: go run main.go <filename>")
+		os.Exit(1)
+	} else if len(os.Args) == 2 {
 		f, err := os.Open(os.Args[1])
 		if err != nil {
 			fmt.Println("Error opening file:", err)
@@ -359,38 +365,36 @@ func main() {
 				state.Visited[startedroom] = true
 				startPathOpt(path, endedroom, route, state)
 			}
-
-			state.Paths = sortByLength(getUniqueStringSets(state.Paths))
-			solution := equalizeSlices(Antsop(state.Ants, state.Paths, state.End))
 			if state.Ants == 0 {
 				fmt.Println("error, no Ants found")
-			} else if state.Ants > 10000 {
-				fmt.Println("error, Ants number is too large")
+				return
+			} else if state.Ants > 1000 {
+				fmt.Println("error, Ants number is too large, Max Ants number is 1000")
+				return
+			}
+			state.Paths = sortByLength(getUniqueStringSets(state.Paths))
+			solution := equalizeSlices(Antsop(state.Ants, state.Paths, state.End))
+
+			if state.Paths == nil {
+				fmt.Println("error, no paths connect the start to the end")
 			} else {
-				if state.Paths == nil {
-					fmt.Println("error, no paths connect the start to the end")
-				} else {
-					for i := 0; i < len(solution[0]); i++ {
-						for j := 0; j < state.Ants; j++ {
-							if i >= len(solution[j]) || solution[j][i] == "wait" {
-								continue
-							}
-							fmt.Print("L")
-							fmt.Print(j + 1)
-							fmt.Print("-")
-							fmt.Print(solution[j][i])
-							fmt.Print(" ")
+				for i := 0; i < len(solution[0]); i++ {
+					for j := 0; j < state.Ants; j++ {
+						if i >= len(solution[j]) || solution[j][i] == "wait" {
+							continue
 						}
-						fmt.Println()
+						fmt.Print("L")
+						fmt.Print(j + 1)
+						fmt.Print("-")
+						fmt.Print(solution[j][i])
+						fmt.Print(" ")
 					}
+					fmt.Println()
 				}
 			}
-		} else {
-			fmt.Println("Error: start and end rooms are not defined or are duplicated")
-			os.Exit(1)
 		}
 	} else {
-		fmt.Println("Usage: go run main.go <filename>")
+		fmt.Println("Error: start and end rooms are not defined or are duplicated")
 		os.Exit(1)
 	}
 }
