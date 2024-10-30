@@ -31,7 +31,7 @@ func ReadFile(FilePath string) *structs.State {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		stringoperations.VarState(line, state)
+		rooms.RoomMapping(line, state)
 	}
 
 	if !rooms.Roomtunels(state.RoomsMapTunnels, state.Rooms) {
