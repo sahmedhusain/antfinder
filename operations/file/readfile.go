@@ -40,13 +40,9 @@ func ReadFile(FilePath string) *structs.State {
 	for scanner.Scan() {
 		// Read each line from the file
 		line := scanner.Text()
-<<<<<<< Updated upstream
-		stringoperations.VarState(line, state)
-=======
 		// Map the room information from the line to the state
 		rooms.RoomMapping(line, state)
 		fmt.Printf("\nState after RoomMapping: %+v\n", state) // Debug print the state after RoomMapping
->>>>>>> Stashed changes
 	}
 
 	// Check if the tunnels connect to valid rooms
@@ -76,13 +72,6 @@ func ReadFile(FilePath string) *structs.State {
 			paths.Start(path, endedroom, route, state)
 			fmt.Printf("\nState after paths.Start: %+v\n", state) // Debug print the state after paths.Start
 		}
-<<<<<<< Updated upstream
-		if state.Ants == 0 {
-			fmt.Println("error, no Ants found")
-			os.Exit(1)
-		} else if state.Ants > 1000 {
-			fmt.Println("error, Ants number is too large, Max Ants number is 1000")
-=======
 		maxants := 1000 // Define the maximum number of ants
 		// Check if the number of ants is valid
 		if state.Ants == 0 {
@@ -90,7 +79,6 @@ func ReadFile(FilePath string) *structs.State {
 			os.Exit(1)
 		} else if state.Ants > maxants {
 			fmt.Printf("error, Ants number is too large, Max Ants number is %v\n", maxants)
->>>>>>> Stashed changes
 			os.Exit(1)
 		}
 		fmt.Printf("\nState after checking ants: %+v\n", state) // Debug print the state after checking ants

@@ -1,11 +1,6 @@
 package rooms // Define the package name
 
 import (
-<<<<<<< Updated upstream
-	stringoperations "lem-in/operations/strings"
-)
-
-=======
 	"fmt"                              // Import the fmt package for formatted I/O
 	structs "lem-in/datastruct"        // Import structs from a custom package
 	strOps "lem-in/operations/strings" // Import string operations from a custom package
@@ -94,7 +89,6 @@ func RoomMapping(s string, state *structs.State) {
 }
 
 // Function to modify common rooms in sets of paths
->>>>>>> Stashed changes
 func ModifyCommonRoom(sets [][]string, end string) [][]string {
 	sets = strOps.SortByLength(sets)   // Sort the sets by length
 	for i := 0; i < len(sets)-1; i++ { // Iterate over the sets

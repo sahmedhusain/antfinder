@@ -1,27 +1,6 @@
 package main
 
 import (
-<<<<<<< Updated upstream
-	"fmt"
-	move "lem-in/logic/antsmoving"
-	fileoperations "lem-in/operations/file"
-	stringoperations "lem-in/operations/strings"
-	"os"
-)
-
-func main() {
-	if len(os.Args) > 2 {
-		fmt.Println("Error: too many arguments")
-		fmt.Println("Usage: go run main.go <filename>")
-		os.Exit(1)
-	} else if len(os.Args) == 1 {
-		fmt.Println("Usage: go run main.go <filename>")
-		os.Exit(1)
-	} else if len(os.Args) == 2 {
-		state := fileoperations.ReadFile(os.Args[1])
-
-		solution := stringoperations.EqualizeSlices(move.MoveLogic(state.Ants, state.Paths, state.End))
-=======
     "fmt"                              // Importing the fmt package for formatted I/O
     structs "lem-in/datastruct"        // Importing custom data structures from the datastruct package
     antsMove "lem-in/logic/antsmoving" // Importing ant movement logic from the logic/antsmoving package
@@ -46,7 +25,6 @@ func main() {
 
         solution := strOps.EqualizeSlices(antsMove.MoveLogic(state.Ants, state.Paths, state.End)) // Process the state and get the solution
         fmt.Printf("\nState after processing: %+v\n", state) // Debug print the state
->>>>>>> Stashed changes
 
         for i := 0; i < len(solution[0]); i++ { // Iterate over the length of the first solution slice
             for j := 0; j < state.Ants; j++ { // Iterate over the number of ants

@@ -1,20 +1,11 @@
 package strOps
 
 import (
-<<<<<<< Updated upstream
-	"fmt"
-	structs "lem-in/datastruct"
-	"os"
-	"sort"
-	"strconv"
-	"strings"
-=======
 	"fmt"                       // Package for formatted I/O
 	structs "lem-in/datastruct" // Importing custom data structures
 	"sort"                      // Package for sorting slices
 	"strconv"                   // Package for string conversions
 	"strings"                   // Package for string manipulations
->>>>>>> Stashed changes
 )
 
 // SortByLength sorts a slice of string slices by their length in ascending order
@@ -25,14 +16,6 @@ func SortByLength(sets [][]string) [][]string {
 	return sets // Return the sorted slices
 }
 
-<<<<<<< Updated upstream
-func Recur(a [][]string, b []string, number int) [][]string {
-	if TestEq(a, b, number) {
-		for i := number - 1; i >= 0; i-- {
-			if !TestEq(a, b, i) {
-				a[i] = b
-				return a
-=======
 // Recur recursively updates a slice of string slices based on a condition
 func Recur(a [][]string, b []string, number int) [][]string {
 	if TestEq(a, b, number) { // Check if the slices are equal
@@ -40,7 +23,6 @@ func Recur(a [][]string, b []string, number int) [][]string {
 			if !TestEq(a, b, i) { // If slices are not equal
 				a[i] = b // Update the slice
 				return a // Return the updated slices
->>>>>>> Stashed changes
 			}
 		}
 	} else {
@@ -179,79 +161,7 @@ func UpperClosestDivisibleBy10(n int) int {
 	return ((n / 10) + 1) * 10 // Return the next number divisible by 10
 }
 
-<<<<<<< Updated upstream
-func VarState(s string, state *structs.State) {
-	if s == "" {
-	} else if IsNumber(s) && !state.AntsHere {
-		state.Ants, _ = strconv.Atoi(s)
-		if state.Ants < 0 {
-			fmt.Println("Error: Ants number is negative")
-			os.Exit(1)
-		}
-		state.AntsHere = true
-	} else if s == "##end" {
-		state.StartEnd["end"]++
-		state.StartAndEnd = append(state.StartAndEnd, "##end")
-	} else if s == "##start" {
-		state.StartEnd["start"]++
-		state.StartAndEnd = append(state.StartAndEnd, "##end")
-	} else if s[0] == '#' {
-	} else if len(strings.Fields(s)) == 3 {
-		tru := true
-		for _, t := range strings.Fields(s)[1:] {
-			if !IsNumber(t) {
-				tru = false
-				fmt.Println("invalid data format 1")
-				os.Exit(1)
-				break
-			}
-		}
-		if tru {
-			state.Rooms = append(state.Rooms, strings.Fields(s)[0])
-			state.RoomsMapRoom[strings.Fields(s)[0]] = true
-			state.RoomCoordinates[strings.Join(strings.Fields(s)[1:], ",")]++
-			if state.RoomCoordinates[strings.Join(strings.Fields(s)[1:], ",")] > 1 {
-				fmt.Println("Error: room coordinates are not unique")
-				os.Exit(1)
-			}
-			if state.StartEnd["start"] == 1 && state.StartEnd["end"] == 0 {
-				state.StartEndRooms["start"] = strings.Fields(s)[0]
-				state.StartEnd["start"]--
-			} else if state.StartEnd["end"] == 1 && state.StartEnd["start"] == 0 {
-				state.StartEndRooms["end"] = strings.Fields(s)[0]
-				state.End = strings.Fields(s)[0]
-				state.StartEnd["end"]--
-			}
-		} else {
-			fmt.Println("invalid data format 2")
-			os.Exit(1)
-		}
-	} else if strings.ContainsRune(s, '-') {
-		state.Connect[s]++
-		state.Connect[ReverseHyphenatedString(s)]++
-		if state.Connect[s] > 1 || state.Connect[ReverseHyphenatedString(s)] > 1 {
-			fmt.Println("Error: tunnels are not unique")
-			os.Exit(1)
-		}
-		tempar := strings.Split(s, "-")
-		if len(tempar) == 2 {
-			state.RoomsMapTunnels[tempar[0]] = tempar[0]
-			state.RoomsMapTunnels[tempar[1]] = tempar[1]
-			state.Tunnels[tempar[0]] = append(state.Tunnels[tempar[0]], tempar[1])
-			state.Tunnels[tempar[1]] = append(state.Tunnels[tempar[1]], tempar[0])
-		} else {
-			fmt.Println("invalid data format")
-			os.Exit(1)
-		}
-	} else {
-		fmt.Println("invalid data format")
-		os.Exit(1)
-	}
-}
-
-=======
 // IsNumber checks if a string can be converted to a number
->>>>>>> Stashed changes
 func IsNumber(str string) bool {
 	_, err := strconv.ParseFloat(str, 64) // Try to parse the string as a float
 	return err == nil                     // Return true if no error occurred
