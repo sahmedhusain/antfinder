@@ -50,11 +50,12 @@ func ReadFile(FilePath string) *structs.State {
 			state.Visited[startedroom] = true
 			paths.Start(path, endedroom, route, state)
 		}
+		maxants:= 1000
 		if state.Ants == 0 {
 			fmt.Println("error, no Ants found")
 			os.Exit(1)
-		} else if state.Ants > 1000 {
-			fmt.Println("error, Ants number is too large, Max Ants number is 1000")
+		} else if state.Ants > maxants {
+			fmt.Printf("error, Ants number is too large, Max Ants number is %v\n",maxants)
 			os.Exit(1)
 		}
 		state.Paths = stringoperations.SortByLength(stringoperations.GetUniqueStringSets(state.Paths))
