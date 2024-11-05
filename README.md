@@ -5,9 +5,6 @@
 - Handles large input sizes with optimized algorithms.
 - Provides detailed error messages for invalid input formats.
 
-## Project Structure
-
-
 ## Getting Started
 
 ### Prerequisites
