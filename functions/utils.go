@@ -1,9 +1,9 @@
 package functions
 
 import (
+	s "antfinder/datastruct"
 	"bufio"
 	"fmt"
-	s "lem-in/datastruct"
 	"os"
 	"sort"
 	"strconv"

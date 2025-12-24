@@ -1,7 +1,7 @@
 package functions
 
 import (
-	s "lem-in/datastruct"
+	s "antfinder/datastruct"
 )
 
 var path [][]string

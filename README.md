@@ -1,82 +1,287 @@
-# lem-in
+# AntFinder 🐜
 
-## Features
-- Efficient pathfinding for multiple ants in a graph.
-- Handles large input sizes with optimized algorithms.
-- Provides detailed error messages for invalid input formats.
+[![Go](https://img.shields.io/badge/Go-1.23.2-00ADD8?style=flat&logo=go)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
-## Getting Started
+Welcome to **AntFinder**, a terminal-based application built with Go that simulates efficient pathfinding for ant colonies. Discover optimal routes for multiple ants moving through a graph, with real-time output of their movements. Whether you're learning algorithms or just fascinated by ant behavior, AntFinder makes it engaging and educational.
 
-### Prerequisites
-- Go 1.23.2 or higher
+## ✨ Features
 
-### Installation
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/lem-in.git
-    ```
-2. Navigate to the project directory:
-    ```sh
-    cd lem-in
-    ```
-3. Install dependencies:
-    ```sh
-    go mod tidy
-    ```
+- **Optimized Pathfinding** 🛤️: Finds the shortest paths for ants using advanced algorithms.
+- **Concurrent Ant Movement** 🐜: Simulates multiple ants moving simultaneously without conflicts.
+- **Large Input Handling** 📊: Processes large graphs and ant counts efficiently.
+- **Error Validation** ⚠️: Provides clear error messages for invalid inputs.
+- **Terminal-Based Output** 🖥️: Displays ant movements in real-time via command line.
 
-## Example Usage
-To run the project with an example file:
-```sh
-go run main.go example00.txt
+## 🛠️ Technologies Used
+
+This project is built with:
+
+- **Go** 🐹: Backend processing, algorithm implementation, and data handling.
+
+## 🎯 What We Aim For
+
+AntFinder processes input files describing graphs (rooms and tunnels) to simulate ant movement. The input includes:
+
+1. **Ants** 🐜: Number of ants to move.
+2. **Rooms** 🏠: Nodes in the graph, including start and end.
+3. **Tunnels** 🚇: Connections between rooms.
+
+We use efficient algorithms to find paths and simulate movement, ensuring ants reach the end with minimal steps.
+
+### Input Format Details
+
+The input file must follow a specific format:
+
+- **First line**: A number indicating the number of ants (e.g., `5`).
+- **Room lines**: Each room is defined as `name x y`, where `name` is the room name, and `x y` are coordinates (ignored in pathfinding).
+- **Special rooms**: Marked with `##start` followed by the start room, and `##end` followed by the end room.
+- **Tunnel lines**: Connections between rooms, like `room1-room2`.
+
+#### Example Input File
+
+```
+5
+##start
+start 0 0
+room1 1 1
+room2 2 2
+##end
+end 3 3
+start-room1
+room1-room2
+room2-end
 ```
 
-## Algorithms and Code Explanation
+This represents 5 ants moving from `start` to `end` via `room1` and `room2`.
 
-### Pathfinding and Ant Movement
-The core of the project involves finding the quickest path for ants to move from the start room to the end room. The algorithms are implemented in various functions within the `functions/utils.go` and `functions/ant.go` files.
+| Line Type    | Example       | Description                               |
+| ------------ | ------------- | ----------------------------------------- |
+| Ant Count    | `5`           | Number of ants                            |
+| Start Marker | `##start`     | Indicates the next line is the start room |
+| Room         | `start 0 0`   | Room name and coordinates                 |
+| End Marker   | `##end`       | Indicates the next line is the end room   |
+| Tunnel       | `start-room1` | Connection between two rooms              |
 
-#### Key Functions:
-- `ProcessFile`: Reads the input file and initializes the state.
-- `startPathOpt`: Recursively finds all possible paths from the start to the end room.
-- `Antsop`: Manages the movement of ants along the discovered paths, ensuring the shortest path is taken and avoiding traffic jams.
+### Graph Representation
 
-#### Utility Functions:
-- `isUniqueStringSet`: Checks if a set of strings contains unique elements.
-- `reverseHyphenatedString`: Reverses the order of hyphen-separated strings.
-- `contains`: Checks if a slice contains a specific item.
-- `sortByLength`: Sorts slices of strings by their length.
-- `equalizeSlices`: Ensures all slices have the same length by padding with "wait".
+The rooms and tunnels form a graph:
 
-### Error Handling
-The program includes robust error handling to manage various invalid input scenarios, such as:
-- Invalid number of ants.
-- Missing start or end rooms.
+```
+start ---- room1 ---- room2 ---- end
+```
+
+- **Nodes**: Rooms (start, room1, room2, end)
+- **Edges**: Tunnels (connections)
+
+Ants must move from start to end without colliding, using multiple paths if available.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Go 1.23.2 or higher installed on your machine.
+
+### Installation
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/yourusername/antfinder.git
+   ```
+2. Go to the project folder:
+   ```bash
+   cd antfinder
+   ```
+3. Install dependencies:
+
+   ```bash
+   go mod tidy
+   ```
+
+4. Run the app with an example:
+   ```bash
+   go run main.go examples/example00.txt
+   ```
+
+## 📖 How to Use
+
+Once running, the program reads the input file and outputs the ant movements turn by turn. Each line shows the position of ants at that step. The simulation ends when all ants reach the end room.
+
+### Step-by-Step Usage
+
+1. **Prepare Input File**: Create or use an example file in the required format (see Input Format Details).
+2. **Run the Program**: Execute `go run main.go path/to/input.txt`.
+3. **Observe Output**: The program prints the ant movements, e.g., `L1-room1 L2-room1` means ant 1 and 2 are in room1.
+4. **Interpret Results**: Each turn, ants move to the next room in their path. The goal is to minimize total turns.
+
+### Input File Format
+
+- First line: number of ants.
+- Rooms: name coord_x coord_y.
+- ##start and ##end mark special rooms.
+- Tunnels: room1-room2.
+
+## 🧠 Algorithm Explanation
+
+AntFinder uses graph algorithms to find optimal paths for ants. The main steps are:
+
+1. **Parse Input**: Read and validate the file.
+2. **Find All Paths**: Use DFS to discover paths from start to end.
+3. **Select Best Paths**: Choose non-overlapping paths to distribute ants.
+4. **Simulate Movement**: Move ants turn by turn, avoiding conflicts.
+
+### Algorithm Flowchart
+
+![Algorithm Flowchart](flowchart.png)
+
+_The flowchart illustrates the main steps of the AntFinder algorithm, from parsing input to simulating movement, with error handling branches._
+
+### Data Structure ERD
+
+![Data Structure ERD](erd.png)
+
+_The ERD shows relationships between Room, Tunnel, Ant, and Path entities, including their attributes._
+
+### Pathfinding Logic
+
+We use Depth-First Search (DFS) to find all possible paths.
+
+#### DFS Tree Example
+
+For a simple graph:
+
+```
+start -- a -- b -- end
+  |         |
+  -- c -- d --
+```
+
+DFS explores:
+
+- Path 1: start -> a -> b -> end
+- Path 2: start -> a -> d -> end (if connected)
+- Path 3: start -> c -> d -> end
+
+We collect all paths and select the best combination.
+
+### Ant Assignment
+
+Ants are assigned to paths to balance load.
+
+| Path       | Length | Ants Assigned |
+| ---------- | ------ | ------------- |
+| P1 (short) | 3      | 3 ants        |
+| P2 (long)  | 5      | 2 ants        |
+
+This minimizes total moves.
+
+### Movement Simulation
+
+Ants move simultaneously. In each turn:
+
+- Check if next room is free.
+- Move if possible.
+
+Example Output:
+
+```
+L1-a L2-a
+L1-b L2-b L3-a
+L1-end L2-end L3-b
+L3-end
+```
+
+- Turn 1: Ants 1 and 2 move to a.
+- Turn 2: Ant 1 to b, Ant 2 to b, Ant 3 to a.
+- And so on.
+
+## Terminal Examples 💻
+
+### Running with Example Input 🏃
+
+```bash
+$ go run main.go examples/example00.txt
+L1-0 L1-1
+L1-2 L1-3
+```
+
+### Ant Movement Simulation 🐜
+
+```bash
+$ go run main.go examples/example01.txt
+L1-0 L2-0
+L1-1 L2-1
+L1-2 L2-2
+L1-3 L2-3
+```
+
+## 🛠️ Under the Hood
+
+### Data Handling
+
+We parse input files into Go structs:
+
+- **Room Struct**: Name, coordinates, connections.
+- **Ant Struct**: ID, current path, position.
+- **Graph Struct**: All rooms and tunnels.
+
+Parsing involves reading lines, identifying types, and building the graph.
+
+### Code Structure
+
+- **main.go**: Entry point, calls ProcessFile.
+- **functions/ant.go**: Ant movement logic.
+- **functions/utils.go**: Utility functions like sorting and validation.
+- **datastruct/structs.go**: Data structures.
+
+### Error Management
+
+Common errors:
+
+- Invalid ant count (not a number or negative).
 - Duplicate rooms or tunnels.
-- Invalid room coordinates.
+- Missing start/end rooms.
+- Disconnected graph.
 
-Errors are handled gracefully with specific error messages, ensuring the program does not crash unexpectedly.
+Each error prints a clear message and exits.
 
-## Limitations
-- The program assumes the input format is strictly followed.
-- The maximum number of ants is limited to 10,000.
+The app is efficient for large inputs, using Go's speed for simulations.
 
-## Future Improvements
-- Add support for more complex graph structures.
-- Improve the performance of the pathfinding algorithm.
-- Add more comprehensive error handling and validation.
+## 🤝 Contributing
 
-## Contributing
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/NewFeature`).
-3. Commit your changes (`git commit -m 'Add NewFeature'`).
-4. Push to the branch (`git push origin feature/NewFeature`).
-5. Open a Pull Request.
+We'd love your help! Fork the repo, make changes, and send a pull request. Please follow Go standards and add tests where possible.
 
-## Authors
-- Sayed Ahmed Husain
-- Qasim Aljaffer
-- Mohammed AlAlawi
-- Abdulla Alasmawi
+## 📄 License
 
-## License
-This project is licensed under the MIT License. See the `LICENSE.md` file for details.
+Licensed under MIT - check [LICENSE.md](LICENSE.md) for more.
+
+## 🙏 Acknowledgments
+
+This project was created during a Go learning journey, emphasizing algorithm implementation and simulation. Inspired by the classic lem-in problem.
+
+## 👥 Authors
+
+- **Sayed Ahmed Husain** - [sayedahmed97.sad@gmail.com](mailto:sayedahmed97.sad@gmail.com)
+- **Qasim Aljaffer**
+- **Mohammed AlAlawi**
+- **Abdulla Alasmawi**
+
+## 📚 What I Learned
+
+Building this taught me:
+
+- Graph algorithms and pathfinding techniques.
+- Efficient data structures in Go.
+- Parsing and validating input files.
+- Simulating concurrent processes.
+
+## Limitations 🚫
+
+- Input must follow strict format.
+- Max ants: 10,000.
+
+## Future Improvements 🔮
+
+- Support for dynamic graphs.
+- Performance enhancements.
+- GUI visualization.

@@ -1,8 +1,8 @@
 package main
 
 import (
+	f "antfinder/functions"
 	"fmt"
-	f "lem-in/functions"
 	"os"
 )
 
